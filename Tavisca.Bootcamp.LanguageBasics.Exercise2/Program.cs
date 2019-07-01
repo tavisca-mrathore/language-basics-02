@@ -24,7 +24,67 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
         public static string GetCurrentTime(string[] exactPostTime, string[] showPostTime)
         {
             // Add your code here.
-            throw new NotImplementedException();
+            var length = exactPostTime.Length;
+
+            // if different "showTime" exist for same "postTime" then return "impossible"
+            for (int index = 0; index < length; index++)
+            {
+                for (int index2 = index; index2 < length; index2++)
+                {
+                    if (exactPostTime[index] == exactPostTime[index2] && showPostTime[index] != showPostTime[index2])
+                    {
+                        return "impossible";
+                    }
+                }
+            }
+
+            TimeSpan currentTime = TimeSpan.Parse("0");
+
+            for (int index = 0; index < exactPostTime.Length; index++)
+            {
+                TimeSpan time = TimeSpan.Parse(exactPostTime[index]);
+                // seconds require direct assignment to time on condition
+                if (showPostTime[index].Contains("second"))
+                {
+                    if (currentTime < time)
+                        currentTime = time;
+                }
+                else
+                {
+                    // get current time value posted
+                    int timeValue = int.Parse(showPostTime[index].Substring(0, showPostTime[index].IndexOf(" ")));
+
+                    // minute checks
+                    if (showPostTime[index].Contains("minute"))
+                    {
+                        TimeSpan span = TimeSpan.FromMinutes(timeValue);
+                        if (time + span > TimeSpan.Parse("1.00:00:00"))
+                        {
+                            time = time + span - TimeSpan.FromDays(1);
+                            if (currentTime < time)
+                                currentTime = time;
+                        }
+                        else
+                             if (currentTime < time + span)
+                            currentTime = time + span;
+                    }
+                    // hour checks
+                    if (showPostTime[index].Contains("hour"))
+                    {
+                        TimeSpan span = TimeSpan.FromHours(timeValue);
+                        if (time + span > TimeSpan.Parse("1.00:00:00"))
+                        {
+                            time = time + span - TimeSpan.FromDays(1);
+                            if (currentTime < time)
+                                currentTime = time;
+                        }
+                        else
+                            if (currentTime < time + span)
+                            currentTime = time + span;
+                    }
+                }
+            }
+            return currentTime.ToString();
         }
     }
 }
